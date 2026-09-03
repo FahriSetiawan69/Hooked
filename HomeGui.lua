@@ -1,18 +1,18 @@
--- [[ FahriRoundopHUB - CJ (Cidro Janji) Official Home UI ]] --
+-- [[ FahriRoundopHUB - Hooked! [TRAIT] Official Home UI ]] --
 local CoreGui = game:GetService("CoreGui")
-local BaseURL = "https://raw.githubusercontent.com/FahriSetiawan69/CJ/main/"
+local BaseURL = "https://raw.githubusercontent.com/FahriSetiawan69/Hooked/main/"
 
--- 1. ANTI-DUPLICATE (Pembersihan agar tidak double menu)
-if CoreGui:FindFirstChild("FR_CJ_MobileToggle") then CoreGui.FR_CJ_MobileToggle:Destroy() end
+-- 1. ANTI-DUPLICATE (Pembersihan agar tidak bentrok)
+if CoreGui:FindFirstChild("FR_Hooked_MobileToggle") then CoreGui.FR_Hooked_MobileToggle:Destroy() end
 if CoreGui:FindFirstChild("Fluent") then CoreGui.Fluent:Destroy() end
 
--- Menggunakan Global variable agar bisa diakses oleh module di folder Features
+-- Global Fluent Library
 _G.Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 
 -- 2. WINDOW SETUP
 local Window = _G.Fluent:CreateWindow({
     Title = "FahriRoundopHUB",
-    SubTitle = "Cidro Janji - Optimizer",
+    SubTitle = "Hooked! [TRAIT] Edition",
     TabWidth = 160, 
     Size = UDim2.fromOffset(450, 300),
     Acrylic = true, 
@@ -20,14 +20,15 @@ local Window = _G.Fluent:CreateWindow({
     MinimizeKey = Enum.KeyCode.LeftControl
 })
 
--- 3. MOBILE TOGGLE SYNC
+-- 3. MOBILE TOGGLE SYNC (Tombol melayang untuk Delta Mobile)
 local ScreenGui = Instance.new("ScreenGui", CoreGui)
-ScreenGui.Name = "FR_CJ_MobileToggle"
+ScreenGui.Name = "FR_Hooked_MobileToggle"
 ScreenGui.Enabled = false
+
 local ToggleButton = Instance.new("ImageButton", ScreenGui)
 ToggleButton.Size = UDim2.new(0, 48, 0, 48)
 ToggleButton.Position = UDim2.new(0.02, 0, 0.45, 0)
-ToggleButton.Image = "rbxassetid://4483345998" -- Icon hiasan
+ToggleButton.Image = "rbxassetid://4483345998"
 ToggleButton.Draggable = true
 Instance.new("UICorner", ToggleButton).CornerRadius = UDim.new(0, 12)
 
@@ -36,68 +37,68 @@ Window.Minimize = function(self)
     OriginalMinimize(self)
     ScreenGui.Enabled = Window.Minimized 
 end
+
 ToggleButton.MouseButton1Click:Connect(function() Window:Minimize() end)
 
 -- 4. TABS SETUP
 local Tabs = {
-    Main = Window:AddTab({ Title = "Optimization", Icon = "zap" }),
+    Main = Window:AddTab({ Title = "Combat / Main", Icon = "crosshair" }),
+    Visuals = Window:AddTab({ Title = "Visuals & ESP", Icon = "eye" }),
     Settings = Window:AddTab({ Title = "Settings", Icon = "settings" })
 }
 
--- 5. FEATURES IMPLEMENTATION (Modular Logic)
+-- 5. FEATURES IMPLEMENTATION (Modular Architecture)
 
--- --- TOGGLE SAKTI: FPS BOOST + NIGHT MODE ---
-Tabs.Main:AddToggle("MasterOptimizer", {
-    Title = "Extreme Performance Mode", 
+-- --- FITUR 1: SILENT AIM / PREDICTION HOOK ---
+Tabs.Main:AddToggle("SilentAimToggle", {
+    Title = "Silent Aim (Auto Hook)", 
     Default = false,
-    Description = "Aktifkan Plastik Map, No Shadow, & Night Mode sekaligus."
+    Description = "Mengarahkan kail secara otomatis ke target."
 }):OnChanged(function(v)
     local success, err = pcall(function()
-        -- Load script dari Features
-        loadstring(game:HttpGet(BaseURL .. "Features/FPSBoost.lua"))()
-        if _G.CJ_Optimizer then 
-            _G.CJ_Optimizer:Toggle(v) 
+        loadstring(game:HttpGet(BaseURL .. "Features/SilentAim.lua"))()
+        if _G.Hooked_SilentAim then 
+            _G.Hooked_SilentAim:Toggle(v) 
         end
     end)
     
     if not success then
-        warn("[FR-HUB] Gagal memuat FPSBoost: " .. tostring(err))
+        warn("[FR-HUB] Gagal memuat SilentAim: " .. tostring(err))
     end
 end)
 
--- --- BUTTON: CLEAN MEMORY ---
-Tabs.Main:AddButton({
-    Title = "Clean Memory (Manual)",
-    Description = "Bersihkan RAM & Cache Game (Garbage Collection)",
-    Callback = function()
-        local success, err = pcall(function()
-            -- Load script dari Features
-            loadstring(game:HttpGet(BaseURL .. "Features/CleanMemory.lua"))()
-            if _G.CJ_Cleaner then 
-                _G.CJ_Cleaner:Execute() 
-            end
-        end)
-        
-        if not success then
-            warn("[FR-HUB] Gagal memuat CleanMemory: " .. tostring(err))
+-- --- FITUR 2: PLAYER ESP ---
+Tabs.Visuals:AddToggle("ESPToggle", {
+    Title = "Player ESP", 
+    Default = false,
+    Description = "Menampilkan posisi pemain lain melalui tembok."
+}):OnChanged(function(v)
+    local success, err = pcall(function()
+        loadstring(game:HttpGet(BaseURL .. "Features/ESP.lua"))()
+        if _G.Hooked_ESP then 
+            _G.Hooked_ESP:Toggle(v) 
         end
+    end)
+    
+    if not success then
+        warn("[FR-HUB] Gagal memuat ESP: " .. tostring(err))
     end
-})
+end)
 
 -- 6. CLEANUP (Saat GUI di-close)
 CoreGui.ChildRemoved:Connect(function(child)
     if child.Name == "Fluent" then
         ScreenGui:Destroy()
-        _G.CJ_Optimizer = nil
-        _G.CJ_Cleaner = nil
+        _G.Hooked_SilentAim = nil
+        _G.Hooked_ESP = nil
         _G.Fluent = nil
     end
 end)
 
--- Notifikasi Awal
+-- Notifikasi Pemuatan Berhasil
 _G.Fluent:Notify({
-    Title = "CJ Hub Loaded!",
-    Content = "Siap digunakan di server 80 player.",
+    Title = "Hooked! Hub Loaded",
+    Content = "Script siap digunakan di Delta Mobile.",
     Duration = 5
 })
 
